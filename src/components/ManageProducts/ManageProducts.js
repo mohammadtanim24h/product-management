@@ -9,6 +9,25 @@ const ManageProducts = () => {
             .then((res) => res.json())
             .then((data) => setProducts(data));
     }, []);
+    const deleteProduct = (id) => {
+        const proceed = window.confirm(
+            "Are you sure you want to delete the product?"
+        );
+        if (proceed) {
+            fetch(`http://localhost:5000/product/${id}`, {
+                method: "DELETE",
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.deletedCount > 0) {
+                        const remaining = products.filter(
+                            (product) => product._id !== id
+                        );
+                        setProducts(remaining);
+                    }
+                });
+        }
+    };
     return (
         <div>
             <button
@@ -22,9 +41,21 @@ const ManageProducts = () => {
             </h2>
             <div className="products-container mt-3">
                 {products.map((product) => (
-                    <div className="shadow p-2 m-3 rounded w-50 mx-auto" key={product._id}>
+                    <div
+                        className="shadow p-2 m-3 rounded w-50 mx-auto"
+                        key={product._id}
+                    >
                         <h4>{product.name}</h4>
-                        <p>Price: ${product.price} X {product.quantity}</p>
+                        <p>
+                            Price: ${product.price} X {product.quantity}
+                        </p>
+                        <button
+                            onClick={() => deleteProduct(product._id)}
+                            className="btn btn-danger"
+                        >
+                            Delete
+                        </button>
+                        <button onClick={() => navigate(`/update/${product._id}`)} className="btn btn-primary ms-2">Update</button>
                     </div>
                 ))}
             </div>
